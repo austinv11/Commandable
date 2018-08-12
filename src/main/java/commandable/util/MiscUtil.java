@@ -2,13 +2,21 @@ package commandable.util;
 
 import discord4j.command.util.CommandException;
 import discord4j.core.event.domain.message.*;
+import discord4j.core.object.PermissionOverwrite;
+import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.Role;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.PermissionSet;
 import discord4j.core.object.util.Snowflake;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +69,30 @@ public class MiscUtil {
                     } else {
                         return Mono.empty();
                     }
+                });
+    }
+
+    public static Mono<PermissionSet> effectivePermissions(Member m, @Nullable GuildChannel gc) {
+        return m.getRoles().map(Role::getPermissions)
+                .reduce(PermissionSet::or) // Got base permissions
+                .zipWith(Mono.just(Optional.ofNullable(gc == null ? null : gc.getPermissionOverwrites())))
+                .map(it -> {
+                    PermissionSet base = it.getT1();
+                    Set<PermissionOverwrite> overwrites = it.getT2().orElseGet(HashSet::new);
+                    for (PermissionOverwrite po : overwrites) {
+                        if ((po.getRoleId().isPresent() && m.getRoleIds().contains(po.getRoleId().get()))
+                                || (po.getUserId().isPresent() && m.getId().equals(po.getUserId().get()))) {
+                            base = base.or(po.getAllowed());
+                            base = base.subtract(po.getDenied());
+                        }
+                    }
+                    return base;
+                })
+                .map(set -> {
+                    if (set.contains(Permission.ADMINISTRATOR))
+                        return PermissionSet.all();
+                    else
+                        return set;
                 });
     }
 }
