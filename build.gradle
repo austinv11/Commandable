@@ -1,8 +1,11 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'maven'
+    id 'maven-publish'
     id 'net.ltgt.apt' version '0.18'
     id 'net.nemerosa.versioning' version '2.6.1'
+    id "com.jfrog.bintray" version "1.8.0"
 }
 
 group 'commandable'
@@ -40,6 +43,72 @@ jar {
                 'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
                 'Build-OS': "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
         )
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+javadoc {
+    failOnError false
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['MyPublication']
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name "MIT"
+            url "https://opensource.org/licenses/LGPL-3.0"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "austinv11"
+            name "Austin Varela"
+//            email "dev@d.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/austinv11/Commandable"
+    }
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId project.group
+            artifactId 'Commandable'
+            version project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'A high level and easy-to-use command abstraction built on Discord4J v3')
+                root.appendNode('name', 'Commandable')
+                root.appendNode('url', 'https://github.com/austinv11/Commandable')
+                root.children().last() + pomConfig
+            }
+        }
     }
 }
 
