@@ -1,0 +1,12 @@
+commandable.api.impl.tokens.StringTokenConverter
+commandable.api.impl.tokens.IntegerTokenConverter
+commandable.api.impl.tokens.DoubleTokenConverter
+commandable.api.impl.tokens.LongTokenConverter
+commandable.api.impl.tokens.SnowflakeTokenConverter
+commandable.api.impl.tokens.UserTokenConverter
+commandable.api.impl.tokens.MemberTokenConverter
+commandable.api.impl.tokens.GuildTokenConverter
+commandable.api.impl.tokens.RoleTokenConverter
+commandable.api.impl.tokens.VoiceChannelTokenConverter
+commandable.api.impl.tokens.TextChannelTokenConverter
+commandable.api.impl.tokens.CategoryTokenConverter

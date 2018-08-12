@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'net.ltgt.apt' version '0.18'
+    id 'net.nemerosa.versioning' version '2.6.1'
+}
+
+group 'commandable'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 10  //Java 9-10 features are used
+
+repositories {
+    jcenter()
+    maven {
+        url "https://repo.spring.io/milestone"
+    }
+    maven {
+        url  "https://jitpack.io"
+    }
+}
+
+dependencies {
+    compile "com.discord4j.discord4j:discord4j-core:16aef36"
+    compile "com.discord4j.discord4j:discord4j-command:16aef36"
+
+//    annotationProcessor getRootProject()
+
+    testCompile 'com.google.testing.compile:compile-testing:0.15'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'commandable.util.Boilerplate',
+                'Built-By': System.properties['user.name'],
+                'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+                'Build-Revision': versioning.info.commit,
+                'Created-By': "Gradle ${gradle.gradleVersion}",
+                'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+                'Build-OS': "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+        )
+    }
+}
