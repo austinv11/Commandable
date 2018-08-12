@@ -8,7 +8,7 @@ plugins {
 group 'commandable'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 9  //Java 9 features are used
+sourceCompatibility = 10  //Java 9-10 features are used
 
 repositories {
     jcenter()
