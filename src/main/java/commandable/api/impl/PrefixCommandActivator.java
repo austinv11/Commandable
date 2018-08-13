@@ -43,7 +43,7 @@ public abstract class PrefixCommandActivator implements CommandActivator {
                         String trimmed = t.getT2().trim();
                         if (trimmed.isEmpty())
                             return Activation.fail();
-                        String[] split = trimmed.split("\\s+", 1);
+                        String[] split = trimmed.split("\\s", 2);
                         return Activation.success(t.getT1(), split[0], split.length == 1 || split[1].isEmpty() ? null : split[1]);
                     });
         });
