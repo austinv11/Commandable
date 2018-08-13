@@ -150,8 +150,8 @@ public final class Commandable {
                                     .map(pc -> (ProviderContext<Object>) pc) // IDEK
                                     .flatMap(ctx -> ctx.getCommand()
                                             .execute(event, ctx.getContext().orElse(null))
+                                            .onErrorResume(CommandException.class, throwable -> errorHandler.handle(event, throwable))
                                             .thenReturn(ctx.getCommand()))
-                                    .doOnError(CommandException.class, throwable -> errorHandler.handle(event, throwable))
                                     .doOnError(t -> log.warn("Swallowing Exception", t))
                                     .onErrorResume(t -> Mono.empty());
                         });
