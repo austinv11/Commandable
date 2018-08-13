@@ -151,8 +151,8 @@ public final class Commandable {
                                     .flatMap(ctx -> ctx.getCommand()
                                             .execute(event, ctx.getContext().orElse(null))
                                             .onErrorResume(CommandException.class, throwable -> errorHandler.handle(event, throwable))
+                                            .onErrorResume(t -> Mono.fromRunnable(() -> log.warn("Swallowing Exception", t)))
                                             .thenReturn(ctx.getCommand()))
-                                    .doOnError(t -> log.warn("Swallowing Exception", t))
                                     .onErrorResume(t -> Mono.empty());
                         });
             }
