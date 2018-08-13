@@ -191,7 +191,7 @@ public final class CommandComposer {
                                         .flatMap(t -> (Mono<Tuple2<? extends Annotation, AnnotationHook>>) t.getT2().preEvaluate(t.getT1(), context).then(Mono.just(t)))
                                         .then(Mono.defer(() -> {
                                             try {
-                                                Object o = handles.get(method).invokeExact();
+                                                Object o = handles.get(method).invokeWithArguments();
                                                 if (o instanceof Publisher)
                                                     return Flux.from((Publisher<?>) o).then(Mono.justOrEmpty(Optional.of(o)));
                                                 return Mono.just(Optional.ofNullable(o));
